@@ -1,6 +1,6 @@
 __author__ = 'Daniel Lindsley'
 __license__ = 'BSD'
-__version__ = (0, 1, 0)
+__version__ = (0, 2, 0)
 
 
 class SingleNode(object):
@@ -65,6 +65,18 @@ class LinkedList(object):
             count += 1
 
         return count
+
+    def __getitem__(self, offset):
+        if offset < 0:
+            raise IndexError(
+                "Can't do negative offsets with a singly linked list."
+            )
+
+        for i, node in enumerate(self):
+            if offset == i:
+                return node
+
+        raise IndexError("Index '{0}' out of range.".format(offset))
 
     def insert_first(self, insert_node):
         """

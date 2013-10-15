@@ -148,3 +148,15 @@ class LinkedListTestCase(unittest.TestCase):
 
         with self.assertRaises(StopIteration):
             next(the_list)
+
+    def test_offsets(self):
+        self.assertEqual(self.ll[0].value, 0)
+        self.assertEqual(self.ll[1].value, 2)
+        self.assertEqual(self.ll[2].value, 5)
+        self.assertEqual(self.ll[3].value, 6)
+
+        with self.assertRaises(IndexError):
+            self.ll[-1]
+
+        with self.assertRaises(IndexError):
+            self.ll[5]
