@@ -160,3 +160,55 @@ class LinkedListTestCase(unittest.TestCase):
 
         with self.assertRaises(IndexError):
             self.ll[5]
+
+
+class SortedLinkedListTestCase(unittest.TestCase):
+    def test_insert(self):
+        sll = skiplist.SortedLinkedList()
+        sll.insert(skiplist.SingleNode(value=5))
+        sll.insert(skiplist.SingleNode(value=6))
+        sll.insert(skiplist.SingleNode(value=2))
+        sll.insert(skiplist.SingleNode(value=0))
+        sll.insert(skiplist.SingleNode(value=3))
+        sll.insert(skiplist.SingleNode(value=2))
+
+        self.assertEqual(len(sll), 6)
+        the_list = iter(sll)
+
+        # Should come out in the correct order.
+        self.assertEqual(next(the_list).value, 0)
+        self.assertEqual(next(the_list).value, 2)
+        self.assertEqual(next(the_list).value, 2)
+        self.assertEqual(next(the_list).value, 3)
+        self.assertEqual(next(the_list).value, 5)
+        self.assertEqual(next(the_list).value, 6)
+
+    def test_remove(self):
+        sll = skiplist.SortedLinkedList()
+        sll.insert(skiplist.SingleNode(value=5))
+        sll.insert(skiplist.SingleNode(value=6))
+        sll.insert(skiplist.SingleNode(value=2))
+        sll.insert(skiplist.SingleNode(value=0))
+        sll.insert(skiplist.SingleNode(value=3))
+        sll.insert(skiplist.SingleNode(value=2))
+
+        self.assertEqual(len(sll), 6)
+        self.assertTrue(sll.remove(skiplist.SingleNode(value=3)))
+        self.assertEqual(len(sll), 5)
+        self.assertTrue(sll.remove(skiplist.SingleNode(value=6)))
+        self.assertEqual(len(sll), 4)
+        # Remove the first ``2``.
+        self.assertTrue(sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(sll), 3)
+        # Remove the second ``2``.
+        self.assertTrue(sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(sll), 2)
+        # Nope, there are no more ``2``s there.
+        self.assertFalse(sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(sll), 2)
+
+        the_list = iter(sll)
+
+        # Should come out in the correct order.
+        self.assertEqual(next(the_list).value, 0)
+        self.assertEqual(next(the_list).value, 5)

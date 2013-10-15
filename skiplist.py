@@ -3,6 +3,10 @@ __license__ = 'BSD'
 __version__ = (0, 2, 0)
 
 
+class InsertError(Exception):
+    pass
+
+
 class SingleNode(object):
     """
     A simple, singly linked list node.
@@ -10,6 +14,24 @@ class SingleNode(object):
     def __init__(self, value=None, next=None):
         self.value = value
         self.next = next
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __le__(self, other):
+        return self.value <= other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __ge__(self, other):
+        return self.value >= other.value
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __ne__(self, other):
+        return self.value != other.value
 
     def insert_after(self, new_node):
         """
@@ -110,6 +132,71 @@ class LinkedList(object):
         return old_node
 
 
+class SortedLinkedList(LinkedList):
+    """
+    A linked list that maintains the correct sort order.
+    """
+    def insert_after(self, existing_node, new_node):
+        if not existing_node <= new_node:
+            raise InsertError("Invalid placement for the new node.")
+
+        if existing_node.next and not new_node <= existing_node.next:
+            raise InsertError("Invalid placement for the new node.")
+
+        return super(SortedLinkedList, self).insert_after(
+            existing_node,
+            new_node
+        )
+
+    def insert_first(self, new_node):
+        if self.head and not new_node <= self.head:
+            raise InsertError("Invalid placement for the new node.")
+
+        return super(SortedLinkedList, self).insert_first(new_node)
+
+    def insert(self, new_node):
+        if not self.head or new_node < self.head:
+            self.insert_first(new_node)
+            return
+
+        previous = self.head
+
+        for node in self:
+            if previous <= new_node <= node:
+                previous.insert_after(new_node)
+                return
+
+            previous = node
+
+        previous.insert_after(new_node)
+
+    def remove(self, remove_node):
+        previous = self.head
+
+        for node in self:
+            if node == remove_node:
+                previous.remove_after()
+                return True
+
+            previous = node
+
+        return False
+
+
 class Skiplist(object):
-    def __init__(self, ):
+    """
+    Implements a basic skiplist.
+
+    A skiplist provides a quickly searchable structure (like a balanced binary
+    tree) that also updates fairly cheaply (no nasty rebalancing acts).
+
+    In other words, it's awesome.
+
+    See http://en.wikipedia.org/wiki/Skip_list for more information.
+    """
+    def __init__(self, probability=0.5, list_class=LinkedList):
         self.layers = []
+        self.probability = probability
+
+    def insert(self, value):
+        pass
