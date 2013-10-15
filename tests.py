@@ -48,7 +48,6 @@ class LinkedListTestCase(unittest.TestCase):
     def test_init(self):
         ll = skiplist.LinkedList()
         self.assertEqual(ll.head, None)
-        self.assertEqual(ll._count, 0)
 
     def test_str(self):
         output = str(self.ll)

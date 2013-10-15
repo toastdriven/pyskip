@@ -39,7 +39,6 @@ class LinkedList(object):
     """
     def __init__(self):
         self.head = None
-        self._count = 0
 
     def __str__(self):
         return 'LinkedList: {0} items starting with {1}'.format(
@@ -60,7 +59,12 @@ class LinkedList(object):
         return cur
 
     def __len__(self):
-        return self._count
+        count = 0
+
+        for node in self:
+            count += 1
+
+        return count
 
     def insert_first(self, insert_node):
         """
@@ -68,14 +72,12 @@ class LinkedList(object):
         """
         insert_node.next = self.head
         self.head = insert_node
-        self._count += 1
 
     def insert_after(self, existing_node, insert_node):
         """
         Inserts the new node after a given node in the list.
         """
         existing_node.insert_after(insert_node)
-        self._count += 1
 
     def remove_first(self):
         """
@@ -86,7 +88,6 @@ class LinkedList(object):
 
         old_head = self.head
         self.head = self.head.next
-        self._count -= 1
         return old_head
 
     def remove_after(self, existing_node):
@@ -94,10 +95,6 @@ class LinkedList(object):
         Removes the node (if any) that follows the provided node in the list.
         """
         old_node = existing_node.remove_after()
-
-        if old_node is not None:
-            self._count -= 1
-
         return old_node
 
 
