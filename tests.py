@@ -245,7 +245,6 @@ class SkiplistTestCase(unittest.TestCase):
 
         layer_1 = skiplist.SortedLinkedList()
         # First element must always be full-height.
-        layer_1.insert(skiplist.SkiplistNode(value=3, down=layer_2[0]))
         layer_1.insert(skiplist.SkiplistNode(value=7, down=layer_2[1]))
         layer_1.insert(skiplist.SkiplistNode(value=17, down=layer_2[3]))
 
@@ -309,7 +308,11 @@ class SkiplistTestCase(unittest.TestCase):
             next(the_list)
 
     def test_insert(self):
-        pass
+        self.assertFalse(6 in self.skip)
+        self.skip.insert(6)
+        self.assertTrue(6 in self.skip)
 
     def test_remove(self):
-        pass
+        self.assertTrue(4 in self.skip)
+        self.skip.remove(4)
+        self.assertFalse(4 in self.skip)

@@ -3,7 +3,7 @@ import random
 
 __author__ = 'Daniel Lindsley'
 __license__ = 'BSD'
-__version__ = (0, 5, 0)
+__version__ = (0, 8, 0)
 
 
 class InsertError(Exception):
@@ -64,6 +64,8 @@ class LinkedList(object):
         cur = self.current
         self.current = cur.next
         return cur
+    # For Python 2.X-compat.
+    next = __next__
 
     def __len__(self):
         count = 0
@@ -86,12 +88,15 @@ class LinkedList(object):
         raise IndexError("Index '{0}' out of range.".format(offset))
 
     def __contains__(self, value):
+        return self.find(value) is not None
+
+    def find(self, value):
         for node in self:
             if node.value == value:
                 # We found it! Yay! Bail early.
-                return True
+                return node
 
-        return False
+        return None
 
     def insert_first(self, insert_node):
         """
@@ -136,19 +141,19 @@ class SortedLinkedList(LinkedList):
     """
     A linked list that maintains the correct sort order.
     """
-    def __contains__(self, value):
+    def find(self, value):
         # We can be more efficient here, since we know we're sorted.
         for node in self:
             if node.value == value:
                 # We found it! Yay! Bail early.
-                return True
+                return node
 
             if node.value > value:
                 # We've exceeded the value & we didn't already come across it.
                 # Must not be here. Bail.
-                return False
+                return None
 
-        return False
+        return None
 
     def insert_after(self, existing_node, new_node):
         if not existing_node <= new_node:
@@ -213,9 +218,20 @@ class Skiplist(object):
 
     See http://en.wikipedia.org/wiki/Skip_list for more information.
     """
-    def __init__(self, list_class=SortedLinkedList, max_layers=32):
-        self.list_class = list_class
-        self.max_layers = max_layers
+    list_class = SortedLinkedList
+    node_class = SkiplistNode
+    max_layers = 32
+
+    def __init__(self, list_class=None, node_class=None, max_layers=None):
+        if list_class is not None:
+            self.list_class = list_class
+
+        if node_class is not None:
+            self.node_class = node_class
+
+        if max_layers is not None:
+            self.max_layers = max_layers
+
         self.layers = [
             self.list_class()
         ]
@@ -240,32 +256,99 @@ class Skiplist(object):
         return random.randint(2, self.max_layers)
 
     def find(self, value):
-        current = self.layers[0].head
+        """
+        Looks for a given value within the skiplist.
+
+        Returns the node if found, ``None`` if the value was not found.
+        """
+        layer_offset = 0
+        current = self.layers[layer_offset].head
+        is_first = True
 
         while True:
             if current is None:
                 # We've exhausted all options. Bail out.
-                return None
+                break
 
             if current.value == value:
                 # We found it! Bail out.
                 return current
+            elif current.value > value:
+                if is_first:
+                    # We're at the beginning of the list, but there may be
+                    # levels below with numbers befor this one.
+                    layer_offset += 1
+
+                    if layer_offset <= len(self.layers) - 1:
+                        current = self.layers[layer_offset].head
+                        continue
+                    else:
+                        break
 
             if current.next and current.next.value <= value:
                 # The next node in the current layer might match.
                 current = current.next
+                is_first = False
                 continue
             else:
                 # Either the next node is too high or we reached the end of that
                 # layer. Attempt to descend.
                 if current.down is not None:
                     current = current.down
+                    layer_offset += 1
                     continue
                 else:
-                    return None
+                    break
 
-    def insert(self, value):
-        pass
+        return None
+
+    def insert(self, value, **kwargs):
+        num_layers = len(self.layers)
+        height = self.generate_height()
+
+        # Make sure we have enough layers to accommodate.
+        if height > num_layers:
+            for i in range(num_layers, height):
+                self.layers.insert(0, self.list_class())
+
+        down = None
+
+        for i in range(height):
+            new_node = self.node_class(value=value, **kwargs)
+            self.layers[num_layers - (i + 1)].insert(new_node)
+            new_node.down = down
+            down = new_node
 
     def remove(self, value):
-        pass
+        node = self.find(value)
+
+        if node is None:
+            return None
+
+        # FIXME: This is bad.
+        #        The other operations can be O(log N), but without knowing what
+        #        layer offset we found the node in, we can't properly remove it
+        #        without reaching in.
+        #        For now, let's settle on something that works but is slow.
+        for layer in self.layers:
+            layer.remove(node)
+
+    def debug(self, column_width=4):
+        """
+        Prints a representation of the skiplist's structure.
+
+        Default ``column_width`` parameter is ``4``.
+        """
+        column_format_string = "{:" + str(column_width) + "} "
+        full = self.layers[-1]
+
+        for layer_offset, layer in enumerate(self.layers):
+            print("{:<3}".format(layer_offset), end=": ")
+
+            for node in full:
+                if node.value in layer:
+                    print(column_format_string.format(node.value), end="")
+                else:
+                    print("     ", end="")
+
+            print()
