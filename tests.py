@@ -161,19 +161,28 @@ class LinkedListTestCase(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.ll[5]
 
+    def test_contains(self):
+        self.assertTrue(0 in self.ll)
+        self.assertTrue(5 in self.ll)
+        self.assertTrue(6 in self.ll)
+        self.assertFalse(-1 in self.ll)
+        self.assertFalse(4 in self.ll)
+
 
 class SortedLinkedListTestCase(unittest.TestCase):
-    def test_insert(self):
-        sll = skiplist.SortedLinkedList()
-        sll.insert(skiplist.SingleNode(value=5))
-        sll.insert(skiplist.SingleNode(value=6))
-        sll.insert(skiplist.SingleNode(value=2))
-        sll.insert(skiplist.SingleNode(value=0))
-        sll.insert(skiplist.SingleNode(value=3))
-        sll.insert(skiplist.SingleNode(value=2))
+    def setUp(self):
+        super(SortedLinkedListTestCase, self).setUp()
+        self.sll = skiplist.SortedLinkedList()
+        self.sll.insert(skiplist.SingleNode(value=5))
+        self.sll.insert(skiplist.SingleNode(value=6))
+        self.sll.insert(skiplist.SingleNode(value=2))
+        self.sll.insert(skiplist.SingleNode(value=0))
+        self.sll.insert(skiplist.SingleNode(value=3))
+        self.sll.insert(skiplist.SingleNode(value=2))
 
-        self.assertEqual(len(sll), 6)
-        the_list = iter(sll)
+    def test_insert(self):
+        self.assertEqual(len(self.sll), 6)
+        the_list = iter(self.sll)
 
         # Should come out in the correct order.
         self.assertEqual(next(the_list).value, 0)
@@ -184,31 +193,30 @@ class SortedLinkedListTestCase(unittest.TestCase):
         self.assertEqual(next(the_list).value, 6)
 
     def test_remove(self):
-        sll = skiplist.SortedLinkedList()
-        sll.insert(skiplist.SingleNode(value=5))
-        sll.insert(skiplist.SingleNode(value=6))
-        sll.insert(skiplist.SingleNode(value=2))
-        sll.insert(skiplist.SingleNode(value=0))
-        sll.insert(skiplist.SingleNode(value=3))
-        sll.insert(skiplist.SingleNode(value=2))
-
-        self.assertEqual(len(sll), 6)
-        self.assertTrue(sll.remove(skiplist.SingleNode(value=3)))
-        self.assertEqual(len(sll), 5)
-        self.assertTrue(sll.remove(skiplist.SingleNode(value=6)))
-        self.assertEqual(len(sll), 4)
+        self.assertEqual(len(self.sll), 6)
+        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=3)))
+        self.assertEqual(len(self.sll), 5)
+        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=6)))
+        self.assertEqual(len(self.sll), 4)
         # Remove the first ``2``.
-        self.assertTrue(sll.remove(skiplist.SingleNode(value=2)))
-        self.assertEqual(len(sll), 3)
+        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(self.sll), 3)
         # Remove the second ``2``.
-        self.assertTrue(sll.remove(skiplist.SingleNode(value=2)))
-        self.assertEqual(len(sll), 2)
+        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(self.sll), 2)
         # Nope, there are no more ``2``s there.
-        self.assertFalse(sll.remove(skiplist.SingleNode(value=2)))
-        self.assertEqual(len(sll), 2)
+        self.assertFalse(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertEqual(len(self.sll), 2)
 
-        the_list = iter(sll)
+        the_list = iter(self.sll)
 
         # Should come out in the correct order.
         self.assertEqual(next(the_list).value, 0)
         self.assertEqual(next(the_list).value, 5)
+
+    def test_contains(self):
+        self.assertTrue(0 in self.sll)
+        self.assertTrue(5 in self.sll)
+        self.assertTrue(6 in self.sll)
+        self.assertFalse(-1 in self.sll)
+        self.assertFalse(4 in self.sll)

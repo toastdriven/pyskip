@@ -1,6 +1,6 @@
 __author__ = 'Daniel Lindsley'
 __license__ = 'BSD'
-__version__ = (0, 2, 0)
+__version__ = (0, 3, 0)
 
 
 class InsertError(Exception):
@@ -79,6 +79,14 @@ class LinkedList(object):
 
         raise IndexError("Index '{0}' out of range.".format(offset))
 
+    def __contains__(self, value):
+        for node in self:
+            if node.value == value:
+                # We found it! Yay! Bail early.
+                return True
+
+        return False
+
     def insert_first(self, insert_node):
         """
         Inserts the new node at the beginning of the list.
@@ -120,6 +128,20 @@ class SortedLinkedList(LinkedList):
     """
     A linked list that maintains the correct sort order.
     """
+    def __contains__(self, value):
+        # We can be more efficient here, since we know we're sorted.
+        for node in self:
+            if node.value == value:
+                # We found it! Yay! Bail early.
+                return True
+
+            if node.value > value:
+                # We've exceeded the value & we didn't already come across it.
+                # Must not be here. Bail.
+                return False
+
+        return False
+
     def insert_after(self, existing_node, new_node):
         if not existing_node <= new_node:
             raise InsertError("Invalid placement for the new node.")
