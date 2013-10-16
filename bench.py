@@ -1,14 +1,14 @@
 import random
 import time
 
-import skiplist
+import pyskip
 
 
 MAX_LOAD = 1000
 
 
 def load_skiplist():
-    skip = skiplist.Skiplist()
+    skip = pyskip.Skiplist()
 
     for i in range(MAX_LOAD):
         print(i, end='\r')

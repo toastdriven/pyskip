@@ -75,4 +75,4 @@ Meta
 
 :author: Daniel Lindsley
 :license: BSD
-:version: 0.8.0
+:version: 0.9.0

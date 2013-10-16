@@ -6,7 +6,7 @@ except ImportError:
 
 setup(
     name="pyskip",
-    version="0.8.0",
+    version="0.9.0",
     description="A pure Python skiplist.",
     author='Daniel Lindsley',
     author_email='daniel@toastdriven.com',

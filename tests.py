@@ -3,10 +3,10 @@ try:
 except ImportError:
     import unittest
 
-import skiplist
+import pyskip
 
 
-class TestNode(skiplist.SingleNode):
+class TestNode(pyskip.SingleNode):
     def __init__(self, *args, **kwargs):
         super(TestNode, self).__init__(*args, **kwargs)
 
@@ -17,15 +17,15 @@ class TestNode(skiplist.SingleNode):
 
 class SingleNodeTestCase(unittest.TestCase):
     def test_init(self):
-        n1 = skiplist.SingleNode()
+        n1 = pyskip.SingleNode()
         self.assertEqual(n1.value, None)
         self.assertEqual(n1.next, None)
 
-        n2 = skiplist.SingleNode(value='whatever')
+        n2 = pyskip.SingleNode(value='whatever')
         self.assertEqual(n2.value, 'whatever')
         self.assertEqual(n2.next, None)
 
-        n3 = skiplist.SingleNode(value='another', next=n2)
+        n3 = pyskip.SingleNode(value='another', next=n2)
         self.assertEqual(n3.value, 'another')
         self.assertEqual(n3.next, n2)
 
@@ -33,12 +33,12 @@ class SingleNodeTestCase(unittest.TestCase):
 class LinkedListTestCase(unittest.TestCase):
     def setUp(self):
         super(LinkedListTestCase, self).setUp()
-        self.ll = skiplist.LinkedList()
+        self.ll = pyskip.LinkedList()
 
-        self.head = skiplist.SingleNode(value=0)
-        self.first = skiplist.SingleNode(value=2)
-        self.second = skiplist.SingleNode(value=5)
-        self.third = skiplist.SingleNode(value=6)
+        self.head = pyskip.SingleNode(value=0)
+        self.first = pyskip.SingleNode(value=2)
+        self.second = pyskip.SingleNode(value=5)
+        self.third = pyskip.SingleNode(value=6)
 
         self.ll.insert_first(self.head)
         self.ll.insert_after(self.head, self.first)
@@ -46,7 +46,7 @@ class LinkedListTestCase(unittest.TestCase):
         self.ll.insert_after(self.second, self.third)
 
     def test_init(self):
-        ll = skiplist.LinkedList()
+        ll = pyskip.LinkedList()
         self.assertEqual(ll.head, None)
 
     def test_str(self):
@@ -55,32 +55,32 @@ class LinkedListTestCase(unittest.TestCase):
 
     def test_len(self):
         self.assertEqual(len(self.ll), 4)
-        self.assertEqual(len(skiplist.LinkedList()), 0)
+        self.assertEqual(len(pyskip.LinkedList()), 0)
 
     def test_insert_first(self):
-        ll = skiplist.LinkedList()
+        ll = pyskip.LinkedList()
         self.assertEqual(ll.head, None)
         self.assertEqual(len(ll), 0)
 
-        world = skiplist.SingleNode(value='world')
+        world = pyskip.SingleNode(value='world')
         ll.insert_first(world)
         self.assertEqual(ll.head.value, 'world')
         self.assertEqual(ll.head.next, None)
         self.assertEqual(len(ll), 1)
 
-        hello = skiplist.SingleNode(value='Hello')
+        hello = pyskip.SingleNode(value='Hello')
         ll.insert_first(hello)
         self.assertEqual(ll.head.value, 'Hello')
         self.assertEqual(ll.head.next, world)
         self.assertEqual(len(ll), 2)
 
     def test_insert_after(self):
-        ll = skiplist.LinkedList()
+        ll = pyskip.LinkedList()
 
-        hello = skiplist.SingleNode(value='Hello')
-        world = skiplist.SingleNode(value='world')
-        there = skiplist.SingleNode(value='there')
-        the_end = skiplist.SingleNode(value='the end')
+        hello = pyskip.SingleNode(value='Hello')
+        world = pyskip.SingleNode(value='world')
+        there = pyskip.SingleNode(value='there')
+        the_end = pyskip.SingleNode(value='the end')
 
         ll.insert_first(hello)
         self.assertEqual(ll.head.value, 'Hello')
@@ -172,13 +172,13 @@ class LinkedListTestCase(unittest.TestCase):
 class SortedLinkedListTestCase(unittest.TestCase):
     def setUp(self):
         super(SortedLinkedListTestCase, self).setUp()
-        self.sll = skiplist.SortedLinkedList()
-        self.sll.insert(skiplist.SingleNode(value=5))
-        self.sll.insert(skiplist.SingleNode(value=6))
-        self.sll.insert(skiplist.SingleNode(value=2))
-        self.sll.insert(skiplist.SingleNode(value=0))
-        self.sll.insert(skiplist.SingleNode(value=3))
-        self.sll.insert(skiplist.SingleNode(value=2))
+        self.sll = pyskip.SortedLinkedList()
+        self.sll.insert(pyskip.SingleNode(value=5))
+        self.sll.insert(pyskip.SingleNode(value=6))
+        self.sll.insert(pyskip.SingleNode(value=2))
+        self.sll.insert(pyskip.SingleNode(value=0))
+        self.sll.insert(pyskip.SingleNode(value=3))
+        self.sll.insert(pyskip.SingleNode(value=2))
 
     def test_insert(self):
         self.assertEqual(len(self.sll), 6)
@@ -194,18 +194,18 @@ class SortedLinkedListTestCase(unittest.TestCase):
 
     def test_remove(self):
         self.assertEqual(len(self.sll), 6)
-        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=3)))
+        self.assertTrue(self.sll.remove(pyskip.SingleNode(value=3)))
         self.assertEqual(len(self.sll), 5)
-        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=6)))
+        self.assertTrue(self.sll.remove(pyskip.SingleNode(value=6)))
         self.assertEqual(len(self.sll), 4)
         # Remove the first ``2``.
-        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertTrue(self.sll.remove(pyskip.SingleNode(value=2)))
         self.assertEqual(len(self.sll), 3)
         # Remove the second ``2``.
-        self.assertTrue(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertTrue(self.sll.remove(pyskip.SingleNode(value=2)))
         self.assertEqual(len(self.sll), 2)
         # Nope, there are no more ``2``s there.
-        self.assertFalse(self.sll.remove(skiplist.SingleNode(value=2)))
+        self.assertFalse(self.sll.remove(pyskip.SingleNode(value=2)))
         self.assertEqual(len(self.sll), 2)
 
         the_list = iter(self.sll)
@@ -225,28 +225,28 @@ class SortedLinkedListTestCase(unittest.TestCase):
 class SkiplistTestCase(unittest.TestCase):
     def setUp(self):
         super(SkiplistTestCase, self).setUp()
-        self.skip = skiplist.Skiplist()
+        self.skip = pyskip.Skiplist()
 
         # Fake a list.
-        layer_3 = skiplist.SortedLinkedList()
-        layer_3.insert(skiplist.SkiplistNode(value=3))
-        layer_3.insert(skiplist.SkiplistNode(value=4))
-        layer_3.insert(skiplist.SkiplistNode(value=7))
-        layer_3.insert(skiplist.SkiplistNode(value=12))
-        layer_3.insert(skiplist.SkiplistNode(value=13))
-        layer_3.insert(skiplist.SkiplistNode(value=14))
-        layer_3.insert(skiplist.SkiplistNode(value=17))
+        layer_3 = pyskip.SortedLinkedList()
+        layer_3.insert(pyskip.SkiplistNode(value=3))
+        layer_3.insert(pyskip.SkiplistNode(value=4))
+        layer_3.insert(pyskip.SkiplistNode(value=7))
+        layer_3.insert(pyskip.SkiplistNode(value=12))
+        layer_3.insert(pyskip.SkiplistNode(value=13))
+        layer_3.insert(pyskip.SkiplistNode(value=14))
+        layer_3.insert(pyskip.SkiplistNode(value=17))
 
-        layer_2 = skiplist.SortedLinkedList()
-        layer_2.insert(skiplist.SkiplistNode(value=3, down=layer_3[0]))
-        layer_2.insert(skiplist.SkiplistNode(value=7, down=layer_3[2]))
-        layer_2.insert(skiplist.SkiplistNode(value=14, down=layer_3[5]))
-        layer_2.insert(skiplist.SkiplistNode(value=17, down=layer_3[6]))
+        layer_2 = pyskip.SortedLinkedList()
+        layer_2.insert(pyskip.SkiplistNode(value=3, down=layer_3[0]))
+        layer_2.insert(pyskip.SkiplistNode(value=7, down=layer_3[2]))
+        layer_2.insert(pyskip.SkiplistNode(value=14, down=layer_3[5]))
+        layer_2.insert(pyskip.SkiplistNode(value=17, down=layer_3[6]))
 
-        layer_1 = skiplist.SortedLinkedList()
+        layer_1 = pyskip.SortedLinkedList()
         # First element must always be full-height.
-        layer_1.insert(skiplist.SkiplistNode(value=7, down=layer_2[1]))
-        layer_1.insert(skiplist.SkiplistNode(value=17, down=layer_2[3]))
+        layer_1.insert(pyskip.SkiplistNode(value=7, down=layer_2[1]))
+        layer_1.insert(pyskip.SkiplistNode(value=17, down=layer_2[3]))
 
         # Cheat a little.
         # But this ensures the ``find`` tests can run correctly without
@@ -269,7 +269,7 @@ class SkiplistTestCase(unittest.TestCase):
         self.assertEqual(self.skip.find(-1), None)
 
         # An empty skiplist shouldn't fail either.
-        empty = skiplist.Skiplist()
+        empty = pyskip.Skiplist()
         self.assertEqual(empty.find(6), None)
 
     def test_contains(self):
@@ -284,13 +284,13 @@ class SkiplistTestCase(unittest.TestCase):
         self.assertFalse(-1 in self.skip)
 
         # An empty skiplist shouldn't fail either.
-        empty = skiplist.Skiplist()
+        empty = pyskip.Skiplist()
         self.assertFalse(6 in empty)
 
     def test_len(self):
         self.assertEqual(len(self.skip), 7)
 
-        empty = skiplist.Skiplist()
+        empty = pyskip.Skiplist()
         self.assertEqual(len(empty), 0)
 
     def test_iter(self):
