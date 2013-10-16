@@ -18,23 +18,11 @@ def load_skiplist():
     return skip
 
 
-def load_list():
-    the_list = []
+def load_sorted_list():
+    the_list = pyskip.SortedLinkedList()
 
     for i in range(MAX_LOAD):
-        inserted = False
-
-        # Simulate a sorted list.
-        for offset, value in enumerate(the_list):
-            if offset is 0:
-                the_list.append(i)
-                inserted = True
-            elif value > i:
-                the_list.insert(offset, i)
-                inserted = True
-
-        if not inserted:
-            the_list.append(i)
+        the_list.insert(pyskip.SingleNode(value=i))
 
     return the_list
 
@@ -44,12 +32,22 @@ def contains_skiplist(skip, randoms):
         assert rand in skip
 
 
-def contains_list(the_list, randoms):
+def contains_sorted_list(the_list, randoms):
     for rand in randoms:
         try:
             assert rand in the_list
         except AssertionError:
             print("{0} not in the list?".format(rand))
+
+
+def inserts_skiplist(skip, randoms):
+    for rand in randoms:
+        skip.insert(rand)
+
+
+def inserts_sorted_list(the_list, randoms):
+    for rand in randoms:
+        the_list.insert(pyskip.SingleNode(value=rand))
 
 
 def run():
@@ -59,23 +57,37 @@ def run():
     print("Skiplist loaded in {0} seconds.".format(end - start))
 
     start = time.time()
-    the_list = load_list()
+    the_list = load_sorted_list()
     end = time.time()
-    print("List loaded in {0} seconds.".format(end - start))
+    print("Sorted Linked List loaded in {0} seconds.".format(end - start))
 
     print()
 
     randoms = [random.randint(0, MAX_LOAD - 1) for i in range(20)]
 
     start = time.time()
-    skip = contains_skiplist(skip, randoms)
+    contains_skiplist(skip, randoms)
     end = time.time()
     print("Skiplist checked contains in {0} seconds.".format(end - start))
 
     start = time.time()
-    skip = contains_list(the_list, randoms)
+    contains_sorted_list(the_list, randoms)
     end = time.time()
-    print("List checked contains in {0} seconds.".format(end - start))
+    print("Sorted Linked List checked contains in {0} seconds.".format(end - start))
+
+    print()
+
+    randoms = [random.randint(0, MAX_LOAD - 1) for i in range(50)]
+
+    start = time.time()
+    skip = inserts_skiplist(skip, randoms)
+    end = time.time()
+    print("Skiplist inserted 50 new values in {0} seconds.".format(end - start))
+
+    start = time.time()
+    skip = inserts_sorted_list(the_list, randoms)
+    end = time.time()
+    print("Sorted Linked List inserted 50 new values in {0} seconds.".format(end - start))
 
 
 if __name__ == '__main__':

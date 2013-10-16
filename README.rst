@@ -53,8 +53,7 @@ Performance
 ===========
 
 Performance is alright, though I'm sure there's room for improvement. See the
-``bench.py`` script for more information (though be aware it's up against C
-code).
+``bench.py`` script for more information.
 
 
 Running Tests
@@ -72,7 +71,6 @@ TODO
 * More performance testing
 
     * Loading data seems slow
-    * Making sure the lookups are really being as efficient as they can
 
 
 Meta
