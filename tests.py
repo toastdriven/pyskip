@@ -220,3 +220,96 @@ class SortedLinkedListTestCase(unittest.TestCase):
         self.assertTrue(6 in self.sll)
         self.assertFalse(-1 in self.sll)
         self.assertFalse(4 in self.sll)
+
+
+class SkiplistTestCase(unittest.TestCase):
+    def setUp(self):
+        super(SkiplistTestCase, self).setUp()
+        self.skip = skiplist.Skiplist()
+
+        # Fake a list.
+        layer_3 = skiplist.SortedLinkedList()
+        layer_3.insert(skiplist.SkiplistNode(value=3))
+        layer_3.insert(skiplist.SkiplistNode(value=4))
+        layer_3.insert(skiplist.SkiplistNode(value=7))
+        layer_3.insert(skiplist.SkiplistNode(value=12))
+        layer_3.insert(skiplist.SkiplistNode(value=13))
+        layer_3.insert(skiplist.SkiplistNode(value=14))
+        layer_3.insert(skiplist.SkiplistNode(value=17))
+
+        layer_2 = skiplist.SortedLinkedList()
+        layer_2.insert(skiplist.SkiplistNode(value=3, down=layer_3[0]))
+        layer_2.insert(skiplist.SkiplistNode(value=7, down=layer_3[2]))
+        layer_2.insert(skiplist.SkiplistNode(value=14, down=layer_3[5]))
+        layer_2.insert(skiplist.SkiplistNode(value=17, down=layer_3[6]))
+
+        layer_1 = skiplist.SortedLinkedList()
+        # First element must always be full-height.
+        layer_1.insert(skiplist.SkiplistNode(value=3, down=layer_2[0]))
+        layer_1.insert(skiplist.SkiplistNode(value=7, down=layer_2[1]))
+        layer_1.insert(skiplist.SkiplistNode(value=17, down=layer_2[3]))
+
+        # Cheat a little.
+        # But this ensures the ``find`` tests can run correctly without
+        # ``insert`` & friends.
+        self.skip.layers = [
+            layer_1,
+            layer_2,
+            layer_3,
+        ]
+
+    def test_find(self):
+        self.assertEqual(self.skip.find(3).value, 3)
+        self.assertEqual(self.skip.find(4).value, 4)
+        self.assertEqual(self.skip.find(7).value, 7)
+        self.assertEqual(self.skip.find(13).value, 13)
+
+        # Reached the end.
+        self.assertEqual(self.skip.find(25), None)
+        # Before the head.
+        self.assertEqual(self.skip.find(-1), None)
+
+        # An empty skiplist shouldn't fail either.
+        empty = skiplist.Skiplist()
+        self.assertEqual(empty.find(6), None)
+
+    def test_contains(self):
+        self.assertTrue(3 in self.skip)
+        self.assertTrue(4 in self.skip)
+        self.assertTrue(7 in self.skip)
+        self.assertTrue(13 in self.skip)
+
+        # Reached the end.
+        self.assertFalse(25 in self.skip)
+        # Before the head.
+        self.assertFalse(-1 in self.skip)
+
+        # An empty skiplist shouldn't fail either.
+        empty = skiplist.Skiplist()
+        self.assertFalse(6 in empty)
+
+    def test_len(self):
+        self.assertEqual(len(self.skip), 7)
+
+        empty = skiplist.Skiplist()
+        self.assertEqual(len(empty), 0)
+
+    def test_iter(self):
+        the_list = iter(self.skip)
+
+        self.assertEqual(next(the_list).value, 3)
+        self.assertEqual(next(the_list).value, 4)
+        self.assertEqual(next(the_list).value, 7)
+        self.assertEqual(next(the_list).value, 12)
+        self.assertEqual(next(the_list).value, 13)
+        self.assertEqual(next(the_list).value, 14)
+        self.assertEqual(next(the_list).value, 17)
+
+        with self.assertRaises(StopIteration):
+            next(the_list)
+
+    def test_insert(self):
+        pass
+
+    def test_remove(self):
+        pass

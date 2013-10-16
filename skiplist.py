@@ -1,6 +1,9 @@
+import random
+
+
 __author__ = 'Daniel Lindsley'
 __license__ = 'BSD'
-__version__ = (0, 3, 0)
+__version__ = (0, 5, 0)
 
 
 class InsertError(Exception):
@@ -14,6 +17,9 @@ class SingleNode(object):
     def __init__(self, value=None, next=None):
         self.value = value
         self.next = next
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.__class__.__name__, self.value)
 
     def __lt__(self, other):
         return self.value < other.value
@@ -93,6 +99,7 @@ class LinkedList(object):
         """
         insert_node.next = self.head
         self.head = insert_node
+        return insert_node
 
     def insert_after(self, existing_node, insert_node):
         """
@@ -100,6 +107,7 @@ class LinkedList(object):
         """
         insert_node.next = existing_node.next
         existing_node.next = insert_node
+        return insert_node
 
     def remove_first(self):
         """
@@ -174,19 +182,24 @@ class SortedLinkedList(LinkedList):
 
             previous = node
 
-        self.insert_after(previous, new_node)
+        return self.insert_after(previous, new_node)
 
     def remove(self, remove_node):
         previous = self.head
 
         for node in self:
             if node == remove_node:
-                self.remove_after(previous)
-                return True
+                return self.remove_after(previous)
 
             previous = node
 
-        return False
+        return None
+
+
+class SkiplistNode(SingleNode):
+    def __init__(self, value=None, next=None, down=None):
+        super(SkiplistNode, self).__init__(value=value, next=next)
+        self.down = down
 
 
 class Skiplist(object):
@@ -200,9 +213,59 @@ class Skiplist(object):
 
     See http://en.wikipedia.org/wiki/Skip_list for more information.
     """
-    def __init__(self, probability=0.5, list_class=LinkedList):
-        self.layers = []
-        self.probability = probability
+    def __init__(self, list_class=SortedLinkedList, max_layers=32):
+        self.list_class = list_class
+        self.max_layers = max_layers
+        self.layers = [
+            self.list_class()
+        ]
+
+    def __str__(self):
+        return 'Skiplist: {0} items'.format(len(self.layers[-1]))
+
+    def __len__(self):
+        return len(self.layers[-1])
+
+    def __contains__(self, value):
+        return self.find(value) is not None
+
+    def __iter__(self):
+        return iter(self.layers[-1])
+
+    def generate_height(self):
+        """
+        Generates a random height (between ``2`` & ``self.max_layers``) to fill
+        in.
+        """
+        return random.randint(2, self.max_layers)
+
+    def find(self, value):
+        current = self.layers[0].head
+
+        while True:
+            if current is None:
+                # We've exhausted all options. Bail out.
+                return None
+
+            if current.value == value:
+                # We found it! Bail out.
+                return current
+
+            if current.next and current.next.value <= value:
+                # The next node in the current layer might match.
+                current = current.next
+                continue
+            else:
+                # Either the next node is too high or we reached the end of that
+                # layer. Attempt to descend.
+                if current.down is not None:
+                    current = current.down
+                    continue
+                else:
+                    return None
 
     def insert(self, value):
+        pass
+
+    def remove(self, value):
         pass
