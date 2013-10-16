@@ -33,27 +33,6 @@ class SingleNode(object):
     def __ne__(self, other):
         return self.value != other.value
 
-    def insert_after(self, new_node):
-        """
-        Adds a new node after the current one.
-
-        Returns True on success (which is always).
-        """
-        new_node.next = self.next
-        self.next = new_node
-        return True
-
-    def remove_after(self):
-        """
-        Removes a new node after the current one.
-        """
-        if self.next is None:
-            return None
-
-        old_next = self.next
-        self.next = self.next.next
-        return old_next
-
 
 class LinkedList(object):
     """
@@ -111,7 +90,8 @@ class LinkedList(object):
         """
         Inserts the new node after a given node in the list.
         """
-        existing_node.insert_after(insert_node)
+        insert_node.next = existing_node.next
+        existing_node.next = insert_node
 
     def remove_first(self):
         """
@@ -128,8 +108,12 @@ class LinkedList(object):
         """
         Removes the node (if any) that follows the provided node in the list.
         """
-        old_node = existing_node.remove_after()
-        return old_node
+        if existing_node.next is None:
+            return None
+
+        old_next = existing_node.next
+        existing_node.next = existing_node.next.next
+        return old_next
 
 
 class SortedLinkedList(LinkedList):
@@ -163,19 +147,19 @@ class SortedLinkedList(LinkedList):
 
         for node in self:
             if previous <= new_node <= node:
-                previous.insert_after(new_node)
+                self.insert_after(previous, new_node)
                 return
 
             previous = node
 
-        previous.insert_after(new_node)
+        self.insert_after(previous, new_node)
 
     def remove(self, remove_node):
         previous = self.head
 
         for node in self:
             if node == remove_node:
-                previous.remove_after()
+                self.remove_after(previous)
                 return True
 
             previous = node
