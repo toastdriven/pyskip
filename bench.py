@@ -2,9 +2,10 @@ import random
 import time
 
 import pyskip
+import bintrees
 
 
-MAX_LOAD = 1000
+MAX_LOAD = 500
 
 
 def load_skiplist():
@@ -27,9 +28,21 @@ def load_sorted_list():
     return the_list
 
 
+def load_binary_tree():
+    tree = bintrees.AVLTree()
+
+    for i in range(MAX_LOAD):
+        tree.insert(i, True)
+
+    return tree
+
+
 def contains_skiplist(skip, randoms):
     for rand in randoms:
-        assert rand in skip
+        try:
+            assert rand in skip
+        except AssertionError:
+            print("{0} not in the skiplist?".format(rand))
 
 
 def contains_sorted_list(the_list, randoms):
@@ -38,6 +51,14 @@ def contains_sorted_list(the_list, randoms):
             assert rand in the_list
         except AssertionError:
             print("{0} not in the list?".format(rand))
+
+
+def contains_binary_tree(tree, randoms):
+    for rand in randoms:
+        try:
+            assert rand in tree
+        except AssertionError:
+            print("{0} not in the tree?".format(rand))
 
 
 def inserts_skiplist(skip, randoms):
@@ -50,6 +71,11 @@ def inserts_sorted_list(the_list, randoms):
         the_list.insert(pyskip.SingleNode(value=rand))
 
 
+def inserts_binary_tree(tree, randoms):
+    for rand in randoms:
+        tree.insert(rand, True)
+
+
 def run():
     start = time.time()
     skip = load_skiplist()
@@ -60,6 +86,11 @@ def run():
     the_list = load_sorted_list()
     end = time.time()
     print("Sorted Linked List loaded in {0} seconds.".format(end - start))
+
+    start = time.time()
+    tree = load_binary_tree()
+    end = time.time()
+    print("Binary tree loaded in {0} seconds.".format(end - start))
 
     print()
 
@@ -75,19 +106,29 @@ def run():
     end = time.time()
     print("Sorted Linked List checked contains in {0} seconds.".format(end - start))
 
+    start = time.time()
+    contains_binary_tree(tree, randoms)
+    end = time.time()
+    print("Binary tree checked contains in {0} seconds.".format(end - start))
+
     print()
 
     randoms = [random.randint(0, MAX_LOAD - 1) for i in range(50)]
 
     start = time.time()
-    skip = inserts_skiplist(skip, randoms)
+    inserts_skiplist(skip, randoms)
     end = time.time()
     print("Skiplist inserted 50 new values in {0} seconds.".format(end - start))
 
     start = time.time()
-    skip = inserts_sorted_list(the_list, randoms)
+    inserts_sorted_list(the_list, randoms)
     end = time.time()
     print("Sorted Linked List inserted 50 new values in {0} seconds.".format(end - start))
+
+    start = time.time()
+    inserts_binary_tree(tree, randoms)
+    end = time.time()
+    print("Binary tree inserted 50 new values in {0} seconds.".format(end - start))
 
 
 if __name__ == '__main__':
