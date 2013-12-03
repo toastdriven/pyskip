@@ -3,3 +3,5 @@
 __pycache__
 env3
 env2
+build
+dist
